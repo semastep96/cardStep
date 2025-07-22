@@ -1,5 +1,5 @@
-const CACHE_NAME = 'app-cache-v3';
-const CORE_ASSETS = ['/cardStep', 'cardStep/manifest.json', 'cardStep/scanner-beep.mp3'];
+const CACHE_NAME = 'app-cache-v4';
+const CORE_ASSETS = ['/cardStep', '/cardStep/manifest.json', '/cardStep/scanner-beep.mp3'];
 
 // При установке кешируем только «ядро» приложения
 self.addEventListener('install', event => {
