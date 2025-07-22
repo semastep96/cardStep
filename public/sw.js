@@ -1,4 +1,4 @@
-const CACHE_NAME = 'app-cache-v1';
+const CACHE_NAME = 'app-cache-v2';
 const CORE_ASSETS = ['/cardStep', 'cardStep/manifest.json'];
 
 // При установке кешируем только «ядро» приложения
