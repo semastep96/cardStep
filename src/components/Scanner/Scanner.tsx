@@ -4,7 +4,7 @@ import BarcodeScanner from "react-qr-barcode-scanner";
 import type {ScannerProps} from "./types.ts";
 import {getScanResultFromQrBarcode} from "./utils.ts";
 import './style.css';
-import beepFile from './scanner-beep-90395.mp3';
+import beepFile from '../../../public/scanner-beep.mp3';
 
 const Scanner = ({onSuccessScan}: ScannerProps) => {
   const audioRef = useRef(new Audio(beepFile));
