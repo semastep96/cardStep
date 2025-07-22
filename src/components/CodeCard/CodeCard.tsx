@@ -1,4 +1,3 @@
-import React from 'react';
 import type {CodeCardProps} from "./types.ts";
 import Barcode from "react-barcode";
 import {scanFormtToBarcodeFormat} from "./utils.ts";
