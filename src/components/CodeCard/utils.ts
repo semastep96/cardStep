@@ -1,7 +1,7 @@
 import type { ScanResult } from '../Scanner/types.ts';
 import type { CodeCardFormat } from './types.ts';
 
-export const scanFormtToBarcodeFormat = (
+export const scanFormToBarcodeFormat = (
   scanFormat: ScanResult['format'],
 ): CodeCardFormat => {
   switch (scanFormat) {

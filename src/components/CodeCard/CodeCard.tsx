@@ -1,31 +1,55 @@
 import type { CodeCardProps } from './types.ts';
-import Barcode from 'react-barcode';
-import { scanFormtToBarcodeFormat } from './utils.ts';
-import QRCode from 'react-qr-code';
-import { deleteScan } from '../../database/db.ts';
+import { QrOrBarCode } from '../QrOrBarCode/QrOrBarCode.tsx';
+import { Modal } from 'antd';
 
-const CodeCard = ({ codeInfo, onDelete, onClose }: CodeCardProps) => {
-  const format = scanFormtToBarcodeFormat(codeInfo.format);
-  const text = codeInfo.text;
+const CodeCard = ({ codeInfo, onClose }: CodeCardProps) => {
+  // const format = scanFormToBarcodeFormat(codeInfo.format);
   return (
-    <div className={'code-card'}>
-      <div>{codeInfo.title}</div>
-      {format !== 'QR' && <Barcode value={text} format={format} />}
-      {format == 'QR' && <QRCode value={text} />}
-      <div>#{text}</div>
-      <div>#{format}</div>
-      <button
-        onClick={() =>
-          deleteScan(codeInfo.id)
-            .then(() => onDelete())
-            .catch(console.error)
-        }
+    <Modal
+      open
+      title={codeInfo.title}
+      onCancel={onClose}
+      footer={[]}
+      style={{ top: '5vh' }}
+      styles={{
+        body: {
+          height: '80vh',
+          width: '100%',
+        },
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          height: '100%',
+          padding: 10,
+        }}
       >
-        удалить
-      </button>
-      <button onClick={onClose}>Закрыть</button>
-    </div>
+        <QrOrBarCode codeInfo={codeInfo} size={'large'} />
+      </div>
+    </Modal>
   );
+  // return (
+  //   <div className={'code-card'}>
+  //     <div>{codeInfo.title}</div>
+  //     <QrOrBarCode codeInfo={codeInfo} size={'large'} />
+  //     <div>Значение: {text}</div>
+  //     <div>Формат: {format}</div>
+  //     <button
+  //       onClick={() =>
+  //         deleteScan(codeInfo.id)
+  //           .then(() => onDelete())
+  //           .catch(console.error)
+  //       }
+  //     >
+  //       удалить
+  //     </button>
+  //     <button onClick={onClose}>Закрыть</button>
+  //   </div>
+  // );
 };
 
 export default CodeCard;

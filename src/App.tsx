@@ -5,6 +5,8 @@ import type { ScanResult } from './components/Scanner/types.ts';
 import { getAllScans, saveScan } from './database/db.ts';
 import { MinCodeCard } from './components/MinCodeCard/MinCodeCard.tsx';
 import CodeCard from './components/CodeCard/CodeCard.tsx';
+import { Button } from 'antd';
+import { PlusCircleFilled } from '@ant-design/icons';
 
 function App() {
   const [isScan, setIsScan] = useState(false);
@@ -32,13 +34,7 @@ function App() {
   const minCards = useMemo(
     () =>
       !isScan && (
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            overflow: 'auto',
-          }}
-        >
+        <div className={'mini-cards'}>
           {cards.map((card, index) => (
             <MinCodeCard
               key={card.title + index}
@@ -66,12 +62,20 @@ function App() {
 
   return (
     <div className="card-step">
-      {!isScan && <button onClick={startScan}>Добавить карточку</button>}
       {isScan && <Scanner onSuccessScan={onScan} />}
       {card && !isScan && (
         <CodeCard codeInfo={card} onDelete={onDelete} onClose={onCloseCard} />
       )}
       {minCards}
+      {!isScan && (
+        <Button
+          className={'add-card-btn'}
+          onClick={startScan}
+          icon={<PlusCircleFilled />}
+        >
+          Добавить
+        </Button>
+      )}
     </div>
   );
 }

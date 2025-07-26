@@ -3,6 +3,7 @@ import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
+import { ConfigProvider, theme } from 'antd';
 
 function withSWUpdateHandling(AppComponent: React.FC) {
   return function WithSW() {
@@ -49,7 +50,13 @@ const RootApp = withSWUpdateHandling(App);
 
 const app = (
   <StrictMode>
-    <RootApp />
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+      }}
+    >
+      <RootApp />
+    </ConfigProvider>
   </StrictMode>
 ) as ReactElement;
 

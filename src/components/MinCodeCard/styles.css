@@ -8,6 +8,14 @@
   background: #000;
 }
 
+.mini-card-content {
+  width: 100%;
+  height: min-content;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
 .min-code-card__btn {
   position: absolute;
   bottom: 0;
