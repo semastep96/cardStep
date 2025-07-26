@@ -16,14 +16,15 @@ const Scanner = ({onSuccessScan}: ScannerProps) => {
   useEffect(() => {
     if (data) onSuccessScan(getScanResultFromQrBarcode(data, title));
   }, [data]);
-  
+
   return (<>
     {!isScan && <input value={title} type={'text'} onChange={({target: {value}}) => setTitle(value)}/>}
     {title && !isScan && <button onClick={() => setMode('scan')}>Начать сканирование</button>}
     {isScan && <div className={'qr-video'}>
-      <BarcodeScanner onUpdate={(_err, data) => {
+      <BarcodeScanner onError={(err) => alert(JSON.stringify(err))} onUpdate={(err, data) => {
+        if (err) alert(JSON.stringify(err));
         if (data) {
-          audioRef.current.play().catch(console.error);
+          audioRef.current.play().catch(err => alert(JSON.stringify(err)));
           setData(data);
           return;
         }
