@@ -14,17 +14,6 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
   const isScan = mode === 'scan';
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        stream.getTracks().forEach((track) => track.stop());
-      })
-      .catch((err) => {
-        alert('Не удалось получить доступ к камере: ' + err.message);
-      });
-  }, []);
-
-  useEffect(() => {
     if (data) onSuccessScan(getScanResultFromQrBarcode(data, title));
   }, [data]);
 
