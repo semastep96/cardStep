@@ -1,4 +1,4 @@
-import type {ScanResult} from '../components/Scanner/types.ts';
+import type { ScanResult } from '../components/Scanner/types.ts';
 
 const DB_NAME = 'ScanResultsDB';
 const STORE_NAME = 'scans';
@@ -11,7 +11,7 @@ export function openDB(): Promise<IDBDatabase> {
     req.onupgradeneeded = () => {
       const db = req.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, {keyPath: 'id'});
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
     };
 
@@ -43,7 +43,9 @@ export async function deleteScan(id: string): Promise<void> {
 export async function getAllScans(): Promise<ScanResult[]> {
   const db = await openDB();
   return await new Promise<ScanResult[]>((resolve, reject) => {
-    const store = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME);
+    const store = db
+      .transaction(STORE_NAME, 'readonly')
+      .objectStore(STORE_NAME);
     const req = store.getAll();
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
@@ -53,7 +55,9 @@ export async function getAllScans(): Promise<ScanResult[]> {
 export async function getScanById(id: string): Promise<ScanResult | undefined> {
   const db = await openDB();
   return new Promise<ScanResult | undefined>((resolve, reject) => {
-    const store = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME);
+    const store = db
+      .transaction(STORE_NAME, 'readonly')
+      .objectStore(STORE_NAME);
     const req = store.get(id);
     req.onsuccess = () => resolve(req.result ?? undefined);
     req.onerror = () => reject(req.error);
