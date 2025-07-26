@@ -1,0 +1,15 @@
+.min-code-card {
+  width: 100%;
+  height: 100%;
+  max-width: 300px;
+  max-height: 200px;
+  position: relative;
+  color: white;
+  background: #000;
+}
+
+.min-code-card__btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

@@ -4,7 +4,7 @@ import { scanFormtToBarcodeFormat } from './utils.ts';
 import QRCode from 'react-qr-code';
 import { deleteScan } from '../../database/db.ts';
 
-const CodeCard = ({ codeInfo, onDelete }: CodeCardProps) => {
+const CodeCard = ({ codeInfo, onDelete, onClose }: CodeCardProps) => {
   const format = scanFormtToBarcodeFormat(codeInfo.format);
   const text = codeInfo.text;
   return (
@@ -23,6 +23,7 @@ const CodeCard = ({ codeInfo, onDelete }: CodeCardProps) => {
       >
         удалить
       </button>
+      <button onClick={onClose}>Закрыть</button>
     </div>
   );
 };

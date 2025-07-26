@@ -20,26 +20,32 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
   return (
     <>
       {!isScan && (
-        <input
-          value={title}
-          type={'text'}
-          onChange={({ target: { value } }) => setTitle(value)}
-        />
+        <div>
+          Назовите карточку
+          <input
+            style={{ marginLeft: 15 }}
+            value={title}
+            type={'text'}
+            onChange={({ target: { value } }) => setTitle(value)}
+          />
+        </div>
       )}
-      {title && !isScan && (
-        <button onClick={() => setMode('scan')}>Начать сканирование</button>
+      {!isScan && (
+        <button disabled={!title} onClick={() => setMode('scan')}>
+          Начать сканирование
+        </button>
       )}
       {isScan && (
         <div className={'qr-video'}>
           <BarcodeScanner
             videoConstraints={{
-              width: { ideal: 1280 },
-              height: { ideal: 720 },
+              width: { ideal: 2560 },
+              height: { ideal: 1440 },
               aspectRatio: { ideal: 16 / 9 },
               frameRate: { ideal: 60 },
-              facingMode: { exact: 'environment' },
+              facingMode: { ideal: 'environment' },
             }}
-            onError={(err) => alert(JSON.stringify(err))}
+            onError={(err) => console.error(err)}
             onUpdate={(_err, data) => {
               if (data) {
                 audioRef.current
