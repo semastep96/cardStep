@@ -16,6 +16,7 @@ const Scanner = ({onSuccessScan}: ScannerProps) => {
   useEffect(() => {
     if (data) onSuccessScan(getScanResultFromQrBarcode(data, title));
   }, [data]);
+  
   return (<>
     {!isScan && <input value={title} type={'text'} onChange={({target: {value}}) => setTitle(value)}/>}
     {title && !isScan && <button onClick={() => setMode('scan')}>Начать сканирование</button>}
