@@ -1,16 +1,16 @@
-const CACHE_NAME = 'app-cache-v4';
+const CACHE_NAME = 'app-cache-v5';
 const CORE_ASSETS = ['/cardStep', '/cardStep/manifest.json', '/cardStep/scanner-beep.mp3'];
 
-// При установке кешируем только «ядро» приложения
+// При установке — кешируем ядро и сразу переходим в activated
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => cache.addAll(CORE_ASSETS))
-            .then(() => self.skipWaiting())
+            .then(() => self.skipWaiting())      // <— сразу пропускаем waiting
     );
 });
 
-// При активации очищаем старые кеши
+// При активации — удаляем старые кеши, забираем управление и шлём табам сообщение
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys =>
@@ -18,29 +18,39 @@ self.addEventListener('activate', event => {
                 keys.filter(key => key !== CACHE_NAME)
                     .map(key => caches.delete(key))
             )
-        ).then(() => self.clients.claim())
+        ).then(() => self.clients.claim())      // <— сразу берём управление
+            .then(() => {
+                // уведомляем страницы о новом SW
+                return self.clients.matchAll({type: 'window'})
+                    .then(clients => {
+                        clients.forEach(client =>
+                            client.postMessage({type: 'SW_ACTIVATED'})
+                        );
+                    });
+            })
     );
 });
 
-// Динамическое кеширование всего, что запрашивается из вашего origin
+// Обработаем сообщение от клиента для skipWaiting (если понадобится)
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+// Динамическое кеширование запросов по origin
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
 
-    // кешируем лишь файлы из вашего приложения
     if (url.origin === self.location.origin) {
-        // на любые запросы (js, css, html, json, картинки и т.п.)
         event.respondWith(
             caches.match(event.request).then(cached => {
-                if (cached) {
-                    return cached;
-                }
+                if (cached) return cached;
+
                 return fetch(event.request).then(networkRes => {
-                    // в кеш — только успешные GET‑запросы
                     if (event.request.method === 'GET' && networkRes.ok) {
-                        console.log({networkRes, event});
                         const copy = networkRes.clone();
-                        caches.open(CACHE_NAME)
-                            .then(cache => cache.put(event.request, copy));
+                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
                     }
                     return networkRes;
                 }).catch(() => {
