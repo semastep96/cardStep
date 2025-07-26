@@ -1,6 +1,6 @@
 import js from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
-import { defineConfig } from "eslint/config";
+import {defineConfig, globalIgnores} from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -16,5 +16,6 @@ export default defineConfig([
       indent: ["error", 2, {SwitchCase: 1}],
       semi: ["error", "always"]
     },
-  }
+  },
+  globalIgnores(["./docs", "./public/sw*"])
 ]);

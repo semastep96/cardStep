@@ -7,6 +7,7 @@ const CodeCard = ({codeInfo}: CodeCardProps) => {
   const format = scanFormtToBarcodeFormat(codeInfo.format);
   const text = codeInfo.text;
   return (<div className={'code-card'}>
+    <div>{codeInfo.title}</div>
     {format !== 'QR' && <Barcode value={text} format={format}/>}
     {format == 'QR' && <QRCode value={text}/>}
     <div>#{text}</div>
