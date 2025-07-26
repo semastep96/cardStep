@@ -32,6 +32,13 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
       {isScan && (
         <div className={'qr-video'}>
           <BarcodeScanner
+            videoConstraints={{
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              aspectRatio: { ideal: 16 / 9 },
+              frameRate: { ideal: 60 },
+              facingMode: { exact: 'environment' },
+            }}
             onError={(err) => alert(JSON.stringify(err))}
             onUpdate={(_err, data) => {
               if (data) {

@@ -2,8 +2,9 @@ import type { CodeCardProps } from './types.ts';
 import Barcode from 'react-barcode';
 import { scanFormtToBarcodeFormat } from './utils.ts';
 import QRCode from 'react-qr-code';
+import { deleteScan } from '../../database/db.ts';
 
-const CodeCard = ({ codeInfo }: CodeCardProps) => {
+const CodeCard = ({ codeInfo, onDelete }: CodeCardProps) => {
   const format = scanFormtToBarcodeFormat(codeInfo.format);
   const text = codeInfo.text;
   return (
@@ -13,6 +14,15 @@ const CodeCard = ({ codeInfo }: CodeCardProps) => {
       {format == 'QR' && <QRCode value={text} />}
       <div>#{text}</div>
       <div>#{format}</div>
+      <button
+        onClick={() =>
+          deleteScan(codeInfo.id)
+            .then(() => onDelete())
+            .catch(console.error)
+        }
+      >
+        удалить
+      </button>
     </div>
   );
 };

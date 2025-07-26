@@ -2,6 +2,7 @@ import type { ScanResult } from '../Scanner/types.ts';
 
 export type CodeCardProps = {
   codeInfo: ScanResult;
+  onDelete: VoidFunction;
 };
 
 export type CodeCardFormat =

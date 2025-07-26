@@ -18,13 +18,31 @@ function App() {
     },
     [data],
   );
+
+  const onDelete = useCallback(() => {
+    getAllScans()
+      .then((result) => setData(result))
+      .catch(console.error);
+  }, []);
   const startScan = useCallback(() => setIsScan(true), []);
 
-  const cards =
-    !isScan &&
-    data.map((card, index) => (
-      <CodeCard key={card.title + index} codeInfo={card} />
-    ));
+  const cards = !isScan && (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
+      }}
+    >
+      {data.map((card, index) => (
+        <CodeCard
+          key={card.title + index}
+          codeInfo={card}
+          onDelete={onDelete}
+        />
+      ))}
+    </div>
+  );
 
   useEffect(() => {
     getAllScans()
