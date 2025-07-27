@@ -5,6 +5,7 @@ import type { ScannerModes, ScannerProps } from './types.ts';
 import { getScanResultFromQrBarcode } from './utils.ts';
 import './style.css';
 import { Button, Input } from 'antd';
+import { SunFilled, SunOutlined } from '@ant-design/icons';
 
 const Scanner = ({ onSuccessScan }: ScannerProps) => {
   const audioRef = useRef(new Audio('./scanner-beep.mp3'));
@@ -12,6 +13,7 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
   const [data, setData] = useState<Result | null>(null);
   const [title, setTitle] = useState<string>('');
   const [mode, setMode] = useState<ScannerModes>('scan');
+  const [torch, setTorch] = useState<boolean>(false);
   const isScan = mode === 'scan';
 
   return (
@@ -38,13 +40,32 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
       )}
       {isScan && (
         <div className={'qr-video'}>
+          <Button
+            className={'qr-video-button'}
+            onClick={() => setTorch(!torch)}
+          >
+            {torch ? <SunOutlined /> : <SunFilled />}
+          </Button>
           <BarcodeScanner
             videoConstraints={{
-              width: { ideal: 414 },
-              height: { ideal: 896 },
-              frameRate: { ideal: 60 },
+              width: {
+                min: 720,
+                ideal: 1280,
+                max: 1920,
+              },
+              height: {
+                min: 720,
+                ideal: 1080,
+                max: 1080,
+              },
+              frameRate: {
+                min: 30,
+                ideal: 60,
+                max: 60,
+              },
               facingMode: { ideal: 'environment' },
             }}
+            torch={torch}
             onError={(err) => console.error(err)}
             onUpdate={(_err, data) => {
               if (data) {
