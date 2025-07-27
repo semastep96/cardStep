@@ -1,4 +1,4 @@
-const CACHE_NAME = 'app-cache-v5';
+const CACHE_NAME = 'app-cache-v6';
 const CORE_ASSETS = ['/cardStep', '/cardStep/manifest.json', '/cardStep/scanner-beep.mp3'];
 
 // При установке — кешируем ядро и сразу переходим в activated
