@@ -15,6 +15,18 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
   const [mode, setMode] = useState<ScannerModes>('scan');
   const [torch, setTorch] = useState<boolean>(false);
   const isScan = mode === 'scan';
+  const [settings, setSettings] = useState<MediaTrackSettings>();
+
+  navigator.mediaDevices
+    .getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+      },
+    })
+    .then((stream) => {
+      const settings = stream.getVideoTracks()[0].getSettings();
+      setSettings(settings);
+    });
 
   return (
     <>
@@ -38,6 +50,14 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
           Создать
         </Button>
       )}
+      {settings && (
+        <div>
+          {JSON.stringify({
+            width: settings.width,
+            height: settings.height,
+          })}
+        </div>
+      )}
       {isScan && (
         <div className={'qr-video'}>
           <Button
@@ -49,19 +69,13 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
           <BarcodeScanner
             videoConstraints={{
               width: {
-                min: 720,
-                ideal: 1280,
-                max: 1920,
+                ideal: 1920,
               },
               height: {
-                min: 720,
                 ideal: 1080,
-                max: 1080,
               },
               frameRate: {
-                min: 30,
                 ideal: 60,
-                max: 60,
               },
               facingMode: { ideal: 'environment' },
             }}
