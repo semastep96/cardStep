@@ -1,41 +1,68 @@
-import { useRef, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Result from '@zxing/library/esm/core/Result';
 import BarcodeScanner from 'react-qr-barcode-scanner';
-import type { ScannerModes, ScannerProps } from './types.ts';
-import { getScanResultFromQrBarcode } from './utils.ts';
+import type { ScannerModes, ScannerProps } from './types';
+import { getScanResultFromQrBarcode } from './utils';
 import './style.css';
 import { Button, Input } from 'antd';
 import { SunFilled, SunOutlined } from '@ant-design/icons';
 
 const Scanner = ({ onSuccessScan }: ScannerProps) => {
   const audioRef = useRef(new Audio('./scanner-beep.mp3'));
-
   const [data, setData] = useState<Result | null>(null);
-  const [title, setTitle] = useState<string>('');
+  const [title, setTitle] = useState('');
   const [mode, setMode] = useState<ScannerModes>('scan');
-  const [torch, setTorch] = useState<boolean>(false);
+  const [torch, setTorch] = useState(false);
+  const [caps, setCaps] = useState<MediaTrackCapabilities>();
+  const [zoomFactor, setZoomFactor] = useState<number>(1);
   const isScan = mode === 'scan';
-  const [settings, setSettings] = useState<MediaTrackSettings>();
 
-  navigator.mediaDevices
-    .getUserMedia({
-      video: {
-        facingMode: { ideal: 'environment' },
-      },
-    })
-    .then((stream) => {
-      const settings = stream.getVideoTracks()[0].getSettings();
-      setSettings(settings);
-    });
+  useEffect(() => {
+    async function getCaps() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+        });
+        const track = stream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities();
+        console.log('Capabilities:', capabilities);
+        setCaps(capabilities);
+        track.stop();
+      } catch (e) {
+        console.error('Failed to get capabilities', e);
+      }
+    }
+
+    getCaps().catch(console.error);
+  }, []);
+
+  let videoConstraints:
+    | {
+        width: { ideal: number } | undefined;
+        height: { ideal: number } | undefined;
+        facingMode: { ideal: string };
+        resizeMode: { ideal: string };
+      }
+    | { facingMode: { ideal: string } };
+  if (caps) {
+    videoConstraints = {
+      width: caps.width?.max ? { ideal: caps.width.max } : undefined,
+      height: caps.height?.max ? { ideal: caps.height.max } : undefined,
+      facingMode: { ideal: 'environment' },
+      resizeMode: { ideal: 'crop-and-scale' },
+    };
+  } else {
+    videoConstraints = { facingMode: { ideal: 'environment' } };
+  }
 
   return (
     <>
       {!isScan && (
         <Input
-          placeholder="Ввелите название"
+          placeholder="Введите название"
           value={title}
-          type={'text'}
-          onChange={({ target: { value } }) => setTitle(value)}
+          onChange={(e) => setTitle(e.target.value)}
         />
       )}
       {!isScan && (
@@ -50,49 +77,48 @@ const Scanner = ({ onSuccessScan }: ScannerProps) => {
           Создать
         </Button>
       )}
-      {settings && (
-        <div>
-          {JSON.stringify({
-            width: settings.width,
-            height: settings.height,
-          })}
-        </div>
-      )}
       {isScan && (
-        <div className={'qr-video'}>
+        <div className="qr-video">
+          {caps && (
+            <div className="qr-zoom-controls">
+              <Button
+                onClick={() => setZoomFactor((z) => Math.min(3, z + 0.25))}
+              >
+                +
+              </Button>
+              <span>{zoomFactor.toFixed(2)}×</span>
+              <Button
+                onClick={() => setZoomFactor((z) => Math.max(1, z - 0.25))}
+              >
+                –
+              </Button>
+            </div>
+          )}
           <Button
-            className={'qr-video-button'}
-            onClick={() => setTorch(!torch)}
+            className="qr-video-button"
+            onClick={() => setTorch((v) => !v)}
           >
-            {torch ? <SunOutlined /> : <SunFilled />}
+            {torch ? <SunFilled /> : <SunOutlined />}
           </Button>
-          <BarcodeScanner
-            videoConstraints={{
-              width: {
-                ideal: 1920,
-              },
-              height: {
-                ideal: 1080,
-              },
-              frameRate: {
-                ideal: 60,
-              },
-              facingMode: { ideal: 'environment' },
-            }}
-            torch={torch}
-            onError={(err) => console.error(err)}
-            onUpdate={(_err, data) => {
-              if (data) {
-                audioRef.current
-                  .play()
-                  .catch((err) => alert(JSON.stringify(err)));
-                setData(data);
-                setMode('configure');
-                return;
-              }
-              setData(null);
-            }}
-          />
+          <div
+            className="zoom-container"
+            style={{ '--zoom': zoomFactor } as React.CSSProperties}
+          >
+            <BarcodeScanner
+              videoConstraints={videoConstraints}
+              torch={torch}
+              onError={(err) => console.error(err)}
+              onUpdate={(_err, d) => {
+                if (d) {
+                  audioRef.current.play().catch(console.error);
+                  setData(d);
+                  setMode('configure');
+                  return;
+                }
+                setData(null);
+              }}
+            />
+          </div>
         </div>
       )}
     </>
